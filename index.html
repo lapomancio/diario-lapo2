@@ -4,19 +4,132 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
         <title>DIARIO LAPO</title>
-        <style>
-            body {
-                font-family: Arial, sans-serif;
-                background-color: #f0f0f0;
-                margin: 0;
-                padding: 20px;
-            }
-            h1 {
-                color: #333;
-            }
-            p {
-                color: #666;
-            }
+        <style>:root {
+  --sfondo: #f2f2f7;
+  --scheda: #ffffff;
+  --testo: #000000;
+  --secondario: #8e8e93;
+  --separatore: rgba(60, 60, 67, 0.18);
+  --blu: #007aff;
+  --rosso: #ff3b30;
+  --campo: rgba(118, 118, 128, 0.12);
+  --font: -apple-system, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --sfondo: #000000;
+    --scheda: #1c1c1e;
+    --testo: #ffffff;
+    --secondario: #98989d;
+    --separatore: rgba(84, 84, 88, 0.65);
+    --blu: #0a84ff;
+    --rosso: #ff453a;
+    --campo: rgba(118, 118, 128, 0.24);
+  }
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; background: var(--sfondo); color: var(--testo); }
+body {
+  font-family: var(--font);
+  font-size: 17px;
+  padding: calc(env(safe-area-inset-top, 0px) + 8px) 16px calc(env(safe-area-inset-bottom, 0px) + 32px);
+  max-width: 560px;
+  margin: 0 auto;
+  -webkit-text-size-adjust: 100%;
+}
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; padding: 0; }
+button:focus-visible, textarea:focus-visible, input:focus-visible {
+  outline: 2px solid var(--blu); outline-offset: 2px;
+}
+
+/* intestazione */
+#testata { display: flex; align-items: center; justify-content: space-between; min-height: 44px; }
+#stato { font-size: 13px; color: var(--secondario); }
+#stato.errore { color: var(--rosso); }
+.azioni { display: flex; }
+.icona { width: 44px; height: 44px; font-size: 22px; color: var(--blu); }
+.icona:active { opacity: 0.5; }
+
+/* titolo del mese */
+#barra { display: flex; align-items: center; margin: 0 0 8px; }
+#titolo { order: 0; flex: 1; font-size: 34px; font-weight: 700; letter-spacing: 0.37px; }
+#titolo .anno { color: var(--secondario); font-weight: 600; }
+#prec { order: 1; }
+#succ { order: 2; }
+#barra button { width: 44px; height: 44px; font-size: 26px; font-weight: 300; color: var(--blu); }
+#barra button:active { opacity: 0.5; }
+
+/* griglia */
+#giorni-sett, #griglia { display: grid; grid-template-columns: repeat(7, 1fr); }
+#giorni-sett span { text-align: center; font-size: 12px; font-weight: 600; color: var(--secondario); padding: 6px 0; }
+.giorno {
+  position: relative; aspect-ratio: 1 / 1; display: flex; align-items: center; justify-content: center;
+  font-size: 20px; border-radius: 50%; margin: 2px;
+}
+.giorno:active { opacity: 0.55; }
+.giorno.vuoto { visibility: hidden; }
+.giorno.oggi { color: var(--rosso); font-weight: 600; }
+.giorno.sel { background: var(--blu); color: #ffffff; font-weight: 600; }
+.giorno.sel.oggi { background: var(--rosso); }
+.giorno.pieno::after {
+  content: ""; position: absolute; bottom: 6px; width: 5px; height: 5px; border-radius: 50%;
+  background: var(--secondario);
+}
+.giorno.sel.pieno::after { background: #ffffff; }
+
+/* giorno selezionato */
+#editor { margin-top: 20px; }
+.testa-giorno { display: flex; align-items: baseline; justify-content: space-between; margin: 0 4px; }
+#editor h2 { font-size: 22px; font-weight: 700; letter-spacing: 0.35px; margin: 0; }
+#conteggio { font-size: 15px; color: var(--secondario); }
+.etichetta { font-size: 13px; color: var(--secondario); margin: 16px 16px 6px; }
+.gruppo { background: var(--scheda); border-radius: 12px; overflow: hidden; }
+.gruppo ul { list-style: none; margin: 0; padding: 0; }
+.riga { display: flex; align-items: center; gap: 12px; padding: 0 16px; min-height: 46px; }
+.riga + .riga, #lista:not(:empty) + .riga { border-top: 0.5px solid var(--separatore); }
+
+/* cerchietti delle checklist */
+.spunta, .cerchio {
+  position: relative; flex: none; width: 22px; height: 22px; border-radius: 50%;
+  border: 1.5px solid var(--secondario);
+}
+.cerchio { opacity: 0.5; }
+.spunta::before { content: ""; position: absolute; inset: -12px; }
+.riga.fatta .spunta { background: var(--blu); border-color: var(--blu); }
+.riga.fatta .spunta::after {
+  content: ""; position: absolute; left: 6px; top: 2px; width: 6px; height: 11px;
+  border: solid #ffffff; border-width: 0 2px 2px 0; transform: rotate(45deg);
+}
+.testo, #nuova {
+  flex: 1; min-width: 0; border: 0; background: transparent; color: var(--testo);
+  font: inherit; padding: 12px 0;
+}
+#nuova::placeholder, #nota::placeholder { color: var(--secondario); }
+.riga.fatta .testo { color: var(--secondario); text-decoration: line-through; }
+.elimina { flex: none; width: 28px; height: 28px; font-size: 20px; color: var(--secondario); opacity: 0.6; }
+
+#nota {
+  display: block; width: 100%; min-height: 160px; resize: vertical; border: 0; background: transparent;
+  color: var(--testo); font: inherit; line-height: 1.4; padding: 12px 16px;
+}
+
+/* impostazioni */
+dialog {
+  width: min(92vw, 440px); border: 0; border-radius: 14px;
+  background: var(--scheda); color: var(--testo); padding: 20px;
+}
+dialog::backdrop { background: rgba(0, 0, 0, 0.4); }
+dialog h3 { font-size: 20px; font-weight: 700; margin: 0 0 4px; }
+dialog p { font-size: 13px; color: var(--secondario); margin: 0 0 12px; line-height: 1.4; }
+dialog label { display: block; font-size: 13px; color: var(--secondario); margin: 12px 0 4px; }
+dialog input {
+  width: 100%; font: inherit; padding: 10px 12px; border: 0; border-radius: 10px;
+  background: var(--campo); color: var(--testo);
+}
+.riga-bottoni { display: flex; gap: 10px; margin-top: 20px; }
+.riga-bottoni button { flex: 1; padding: 13px; border-radius: 12px; font-weight: 600; background: var(--campo); }
+.riga-bottoni .primario { background: var(--blu); color: #ffffff; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
         </style>
         <link rel="manifest" href="manifest.json">
         <link rel="apple-touch-icon" href="icon-192.png">
@@ -25,9 +138,382 @@
 
     </head>
     <body>
-        <h1>Ciao!</h1>
-        <p>Questa è la mia prima app.</p>
+        
+        <div id="app">
+            <div id="testata">
+  <span id="stato"></span>
+  <div class="azioni">
+    <button class="icona" id="btn-sync" aria-label="Sincronizza ora">&#8635;</button>
+    <button class="icona" id="btn-imp" aria-label="Impostazioni">&#9881;</button>
+  </div>
+</div>
+            <div id="barra">
+                <button id="prec">&lt;</button>
+                <span id="titolo"></span>
+                <button id="succ">&gt;</button>
+            </div>
+            <div id="giorni-sett">
+  <span>L</span><span>M</span><span>M</span><span>G</span><span>V</span><span>S</span><span>D</span>
+</div>
+<div id="griglia"></div>
+
+<section id="editor">
+    
+  <div class="testa-giorno">
+    <h2 id="data-sel"></h2>
+    <span id="conteggio"></span>
+  </div>
+
+  <div class="etichetta">Da fare</div>
+  <div class="gruppo">
+    <ul id="lista"></ul>
+    <div class="riga nuova">
+      <span class="cerchio"></span>
+      <input id="nuova" placeholder="Nuova attività" enterkeyhint="done" autocapitalize="sentences">
+    </div>
+  </div>
+
+  <div class="etichetta">Note</div>
+  <div class="gruppo">
+    <textarea id="nota" placeholder="Cosa hai fatto oggi?"></textarea>
+  </div>
+</section>
+
+
+        </div>
+        <dialog id="dlg">
+  <h3>Sincronizzazione GitHub</h3>
+  <p>Le note vengono salvate in un file JSON nel tuo repository. Il token resta solo su questo dispositivo.</p>
+  <label for="c-owner">Utente GitHub</label>
+  <input id="c-owner" autocapitalize="off" autocorrect="off" spellcheck="false">
+  <label for="c-repo">Repository dei dati</label>
+  <input id="c-repo" autocapitalize="off" autocorrect="off" spellcheck="false">
+  <label for="c-branch">Ramo</label>
+  <input id="c-branch" autocapitalize="off" autocorrect="off" spellcheck="false">
+  <label for="c-path">File</label>
+  <input id="c-path" autocapitalize="off" autocorrect="off" spellcheck="false">
+  <label for="c-token">Token di accesso</label>
+  <input id="c-token" type="password" autocapitalize="off" autocorrect="off" spellcheck="false">
+  <div class="riga-bottoni">
+    <button id="c-chiudi" type="button">Chiudi</button>
+    <button id="c-salva" type="button" class="primario">Salva e sincronizza</button>
+  </div>
+</dialog>
         <script>
+            (function () {
+  'use strict';
+
+  var KEY_DATI = 'diario-lapo.dati.v1';
+  var KEY_CFG = 'diario-lapo.cfg.v1';
+
+  function leggi(chiave, def) {
+    try { var v = localStorage.getItem(chiave); return v ? JSON.parse(v) : def; }
+    catch (e) { return def; }
+  }
+  function scrivi(chiave, val) {
+    try { localStorage.setItem(chiave, JSON.stringify(val)); } catch (e) {}
+  }
+
+  // dati: { "2026-10-22": { t: "note", c: [ { x: "attività", d: false } ], u: 1760000000000 } }
+  var dati = leggi(KEY_DATI, {});
+  var cfg = leggi(KEY_CFG, { owner: '', repo: '', branch: 'main', path: 'diario.json', token: '' });
+
+  var oggi = new Date();
+  var vista = new Date(oggi.getFullYear(), oggi.getMonth(), 1);
+  var selezionato = chiave(oggi);
+
+  function pad(n) { return n < 10 ? '0' + n : '' + n; }
+  function chiave(d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+  function esc(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+  function maiuscola(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+
+  var $ = function (id) { return document.getElementById(id); };
+  var elTitolo = $('titolo'), elGriglia = $('griglia'), elNota = $('nota'),
+      elData = $('data-sel'), elStato = $('stato'), dlg = $('dlg'),
+      elLista = $('lista'), elNuova = $('nuova'), elConteggio = $('conteggio'),
+      elEditor = $('editor');
+
+  function haContenuto(g) {
+    return !!(g && ((g.t && g.t.trim()) || (g.c && g.c.length)));
+  }
+
+  /* ---------- disegno ---------- */
+  function disegna() {
+    var mese = maiuscola(vista.toLocaleDateString('it-IT', { month: 'long' }));
+    elTitolo.innerHTML = mese + ' <span class="anno">' + vista.getFullYear() + '</span>';
+    var primo = new Date(vista.getFullYear(), vista.getMonth(), 1);
+    var offset = (primo.getDay() + 6) % 7;
+    var n = new Date(vista.getFullYear(), vista.getMonth() + 1, 0).getDate();
+    var html = '';
+    var i;
+    for (i = 0; i < offset; i++) html += '<span class="giorno vuoto"></span>';
+    for (i = 1; i <= n; i++) {
+      var k = vista.getFullYear() + '-' + pad(vista.getMonth() + 1) + '-' + pad(i);
+      var cls = 'giorno';
+      if (k === chiave(new Date())) cls += ' oggi';
+      if (k === selezionato) cls += ' sel';
+      if (haContenuto(dati[k])) cls += ' pieno';
+      html += '<button class="' + cls + '" data-k="' + k + '" aria-label="' + i + '">' + i + '</button>';
+    }
+    elGriglia.innerHTML = html;
+  }
+
+  function disegnaLista() {
+    var voci = (dati[selezionato] && dati[selezionato].c) || [];
+    var html = '';
+    voci.forEach(function (v, i) {
+      html += '<li class="riga' + (v.d ? ' fatta' : '') + '" data-i="' + i + '">' +
+        '<button class="spunta" aria-label="Segna come fatta"></button>' +
+        '<input class="testo" value="' + esc(v.x) + '">' +
+        '<button class="elimina" aria-label="Elimina">&times;</button>' +
+        '</li>';
+    });
+    elLista.innerHTML = html;
+    aggiornaConteggio();
+  }
+
+  function aggiornaConteggio() {
+    var voci = (dati[selezionato] && dati[selezionato].c) || [];
+    var fatte = voci.filter(function (v) { return v.d; }).length;
+    elConteggio.textContent = voci.length ? fatte + ' di ' + voci.length : '';
+  }
+
+  function mostraGiorno() {
+    var p = selezionato.split('-');
+    var d = new Date(+p[0], +p[1] - 1, +p[2]);
+    elData.textContent = maiuscola(d.toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long' }));
+    elNota.value = (dati[selezionato] && dati[selezionato].t) || '';
+    disegnaLista();
+  }
+
+  function stato(testo, errore) {
+    elStato.textContent = testo;
+    elStato.className = errore ? 'errore' : '';
+  }
+
+  /* ---------- modifiche al giorno ---------- */
+  function assicura() {
+    var g = dati[selezionato];
+    if (!g) g = dati[selezionato] = { t: '', c: [], u: 0 };
+    if (!g.c) g.c = [];
+    return g;
+  }
+
+  var timerSync = null;
+  function salvaGiorno() {
+    var g = dati[selezionato];
+    g.u = Date.now();
+    scrivi(KEY_DATI, dati);
+    var cella = elGriglia.querySelector('[data-k="' + selezionato + '"]');
+    if (cella) cella.classList.toggle('pieno', haContenuto(g));
+    aggiornaConteggio();
+    if (configurato()) {
+      stato('Modifiche da inviare');
+      clearTimeout(timerSync);
+      timerSync = setTimeout(sincronizza, 3000);
+    }
+  }
+
+  elNota.addEventListener('input', function () {
+    assicura().t = elNota.value;
+    salvaGiorno();
+  });
+
+  elLista.addEventListener('input', function (e) {
+    if (!e.target.classList.contains('testo')) return;
+    var i = +e.target.closest('li').getAttribute('data-i');
+    assicura().c[i].x = e.target.value;
+    salvaGiorno();
+  });
+
+  elLista.addEventListener('click', function (e) {
+    var li = e.target.closest('li');
+    if (!li) return;
+    var i = +li.getAttribute('data-i');
+    if (e.target.closest('.spunta')) {
+      var v = assicura().c[i];
+      v.d = !v.d;
+    } else if (e.target.closest('.elimina')) {
+      assicura().c.splice(i, 1);
+    } else {
+      return;
+    }
+    disegnaLista();
+    salvaGiorno();
+  });
+
+  function aggiungi() {
+    var testo = elNuova.value.trim();
+    if (!testo) return;
+    assicura().c.push({ x: testo, d: false });
+    elNuova.value = '';
+    disegnaLista();
+    salvaGiorno();
+  }
+  elNuova.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') { e.preventDefault(); aggiungi(); }
+  });
+  elNuova.addEventListener('blur', aggiungi);
+
+  /* ---------- navigazione ---------- */
+  elGriglia.addEventListener('click', function (e) {
+    var b = e.target.closest('.giorno[data-k]');
+    if (!b) return;
+    selezionato = b.getAttribute('data-k');
+    disegna();
+    mostraGiorno();
+  });
+  $('prec').addEventListener('click', function () {
+    vista = new Date(vista.getFullYear(), vista.getMonth() - 1, 1); disegna();
+  });
+  $('succ').addEventListener('click', function () {
+    vista = new Date(vista.getFullYear(), vista.getMonth() + 1, 1); disegna();
+  });
+
+  /* ---------- impostazioni ---------- */
+  function configurato() { return cfg.owner && cfg.repo && cfg.token; }
+
+  $('btn-imp').addEventListener('click', function () {
+    $('c-owner').value = cfg.owner;
+    $('c-repo').value = cfg.repo;
+    $('c-branch').value = cfg.branch || 'main';
+    $('c-path').value = cfg.path || 'diario.json';
+    $('c-token').value = cfg.token;
+    dlg.showModal();
+  });
+  $('c-chiudi').addEventListener('click', function () { dlg.close(); });
+  $('c-salva').addEventListener('click', function () {
+    cfg = {
+      owner: $('c-owner').value.trim(),
+      repo: $('c-repo').value.trim(),
+      branch: $('c-branch').value.trim() || 'main',
+      path: $('c-path').value.trim() || 'diario.json',
+      token: $('c-token').value.trim()
+    };
+    scrivi(KEY_CFG, cfg);
+    dlg.close();
+    sincronizza();
+  });
+  $('btn-sync').addEventListener('click', function () { sincronizza(); });
+
+  /* ---------- GitHub ---------- */
+  function haUtf8ABase64(str) {
+    var bytes = new TextEncoder().encode(str);
+    var bin = '';
+    for (var i = 0; i < bytes.length; i += 0x8000) {
+      bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+    }
+    return btoa(bin);
+  }
+  function daBase64AUtf8(b64) {
+    var bin = atob(b64.replace(/\s/g, ''));
+    var bytes = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return new TextDecoder().decode(bytes);
+  }
+
+  function urlFile() {
+    return 'https://api.github.com/repos/' + encodeURIComponent(cfg.owner) + '/' +
+      encodeURIComponent(cfg.repo) + '/contents/' + cfg.path.split('/').map(encodeURIComponent).join('/');
+  }
+  function intestazioni() {
+    return {
+      'Accept': 'application/vnd.github+json',
+      'Authorization': 'Bearer ' + cfg.token,
+      'X-GitHub-Api-Version': '2022-11-28'
+    };
+  }
+
+  function unisci(locale, remoto) {
+    var out = {};
+    var cambiatoRemoto = false;
+    var tutte = {};
+    Object.keys(locale).forEach(function (k) { tutte[k] = 1; });
+    Object.keys(remoto).forEach(function (k) { tutte[k] = 1; });
+    Object.keys(tutte).forEach(function (k) {
+      var a = locale[k], b = remoto[k];
+      var vince = !b ? a : !a ? b : (a.u >= b.u ? a : b);
+      out[k] = vince;
+      if (!b || b.u !== vince.u) cambiatoRemoto = true;
+    });
+    return { dati: out, daInviare: cambiatoRemoto };
+  }
+
+  var inCorso = false;
+  var daRipetere = false;
+
+  async function sincronizza() {
+    if (!configurato()) { stato('Sincronizzazione non impostata'); return; }
+    if (inCorso) { daRipetere = true; return; }
+    inCorso = true;
+    clearTimeout(timerSync);
+    stato('Sincronizzo…');
+    try {
+      await ciclo(0);
+      stato('Sincronizzato alle ' + new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }));
+    } catch (err) {
+      stato('Errore: ' + (err && err.message ? err.message : err), true);
+    } finally {
+      inCorso = false;
+      if (daRipetere) { daRipetere = false; sincronizza(); }
+    }
+  }
+
+  async function ciclo(tentativo) {
+    var r = await fetch(urlFile() + '?ref=' + encodeURIComponent(cfg.branch), {
+      headers: intestazioni(), cache: 'no-store'
+    });
+    var sha = null, remoto = {};
+    if (r.status === 200) {
+      var j = await r.json();
+      sha = j.sha;
+      var testo = daBase64AUtf8(j.content || '');
+      remoto = testo.trim() ? JSON.parse(testo) : {};
+    } else if (r.status === 401 || r.status === 403) {
+      throw new Error('token non valido o senza permessi');
+    } else if (r.status !== 404) {
+      throw new Error('GitHub ha risposto ' + r.status);
+    }
+
+    var m = unisci(dati, remoto);
+    dati = m.dati;
+    scrivi(KEY_DATI, dati);
+
+    if (m.daInviare || sha === null) {
+      var corpo = {
+        message: 'Diario ' + new Date().toISOString(),
+        content: haUtf8ABase64(JSON.stringify(dati, null, 1)),
+        branch: cfg.branch
+      };
+      if (sha) corpo.sha = sha;
+      var p = await fetch(urlFile(), {
+        method: 'PUT',
+        headers: Object.assign({ 'Content-Type': 'application/json' }, intestazioni()),
+        body: JSON.stringify(corpo)
+      });
+      if (p.status === 409 || p.status === 422) {
+        if (tentativo < 2) return ciclo(tentativo + 1);
+        throw new Error('conflitto, riprova');
+      }
+      if (!p.ok) throw new Error('scrittura fallita (' + p.status + ')');
+    }
+
+    disegna();
+    if (!elEditor.contains(document.activeElement)) mostraGiorno();
+  }
+
+  /* ---------- avvio ---------- */
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'visible') sincronizza();
+  });
+  window.addEventListener('online', sincronizza);
+
+  disegna();
+  mostraGiorno();
+  if (configurato()) sincronizza(); else stato('Sincronizzazione non impostata');
+})();
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.register('sw.js');
             }
