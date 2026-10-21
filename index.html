@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="it">
+   <head>       
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+        <title>DIARIO LAPO</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f0f0f0;
+                margin: 0;
+                padding: 20px;
+            }
+            h1 {
+                color: #333;
+            }
+            p {
+                color: #666;
+            }
+        </style>
+        <link rel="manifest" href="manifest.json">
+        <link rel="apple-touch-icon" href="icon-192.png">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+
+    </head>
+    <body>
+        <h1>Ciao!</h1>
+        <p>Questa è la mia prima app.</p>
+        <script>
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('sw.js');
+            }
+        </script>
+    </body>
+</html>
+
+ 
